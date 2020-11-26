@@ -77,11 +77,8 @@ class Bill(Base):
         if comm != None:
             descr += "\n" + comm.text.strip()
         self.description = descr
-        print(descr)
         self.authors = soup.find("div", class_="opch_r").text.strip()
-        print(self.authors)
         date_arr = [int(i) for i in soup.find("span", class_="mob_not").text.strip().split(".")[::-1]]
-        print(date_arr)
         self.date = date(*date_arr)
         for keyword in Keyword.query.all():
             if re.search(fr'.*{keyword.word}.*', (descr + self.authors).lower().replace(" ", "")):
@@ -143,7 +140,6 @@ class Link(Base):
         text = ""
         if self.typ == "pdf":
             try:
-                print("Extracting " + filename)
                 with pdfplumber.open(filename) as pdf:
                     for page in pdf.pages:
                         text += page.extract_text()
@@ -170,7 +166,8 @@ class Link(Base):
                 text += html2text.html2text(XHTMLWriter.write(doc, pretty=True).read().decode("utf-8"))
             except:
                 print("Error extracting " + filename)
-        os.remove(filename)
+        if os.path.exists(filename):
+            os.remove(filename)
         self.text = text
 
     def add_keywords(self):
@@ -191,8 +188,8 @@ class Keyword(Base):
         self.word = word.lower().strip()
         self.users.append(user)
         db_session.add(self)
-        self.find_new_keyword()
         db_session.commit()
+        self.find_new_keyword()
 
     def __repr__(self):
         return "<Keyword {}>".format(self.word)
@@ -208,12 +205,15 @@ class Keyword(Base):
         return([k.word for k in Keyword.query.all()])
 
     def find_new_keyword(self):
-        for link in Link.query.all():
-            if re.search(fr'.*{self.word}.*', link.text.replace(" ", "").lower()):
-                link.keywords.append(self)
         for bill in Bill.query.all():
-            if re.search(fr'.*{self.word}.*', (bill.description + bill.authors).replace(" ", "").lower()):
+            if self not in bill.keywords and re.search(fr'.*{self.word}.*', (bill.description + bill.authors).replace(" ", "").lower()):
                 bill.keywords.append(self)
+            for link in bill.links:
+                if self not in link.keywords and re.search(fr'.*{self.word}.*', link.text.replace(" ", "").lower()):
+                    link.keywords.append(self)
+                    if self not in bill.keywords:
+                        bill.keywords.append(self)
+        db_session.commit()
 
 class Event(Base):
 
@@ -252,7 +252,6 @@ class User(Base):
         if len(keywords) > 0:
             added = set(self.get_keywords())
             to_add = set(keywords).difference(added)
-            print("added: {}\nto_add: {}\nkeywords: {}".format(added, to_add, keywords))
             for word in to_add:
                 self.keywords.append(Keyword.return_or_create(self, word))
             db_session.commit()
@@ -272,10 +271,10 @@ class User(Base):
     def compose_message(self, date):
         msg = ""
         for bill in Bill.query.filter_by(updated_date = date):
-            if bill in self.bills:
-                msg += bill.num + "\n"
             if not set(self.keywords).isdisjoint(set(bill.keywords)):
-                msg += bill.num + ': ' + ", ".join([i.word for i in (set(self.keywords) & set(bill.keywords))]) + "\n"
+                msg += (bill.num + ': ' + ", ".join([i.word for i in (set(self.keywords) & set(bill.keywords))]) + "\n")
+            elif bill in self.bills:
+                msg += bill.num + "\n"
         for link in Link.query.filter_by(date = date):
             if not set(self.keywords).isdisjoint(set(link.keywords)):
                 msg += link.link + ': ' + ", ".join([i.word for i in (set(self.keywords) & set(link.keywords))]) + "\n"

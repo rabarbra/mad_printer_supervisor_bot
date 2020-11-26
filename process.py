@@ -16,7 +16,7 @@ from models import Bill
 import requests
 import re
 
-yesterday = date.today() - timedelta(days=1)
+yesterday = date.today() - timedelta(days=2)
 http = "https://sozd.duma.gov.ru/calendar/b/day/{}/{}".format(yesterday, yesterday)
 resp = requests.get(http)
 soup = BeautifulSoup(resp.text, 'lxml')
@@ -34,6 +34,9 @@ for bill in bills:
         bill_obj = Bill(bill)
         added_links = []
     url = "https://sozd.duma.gov.ru/bill/" + bill
+    print("================================================")
+    print(url)
+    print(f"{bill_obj.description}\n{bill_obj.authors}")
     resp = requests.get(url)
     soup = BeautifulSoup(resp.text, 'lxml')
     links = []
@@ -63,8 +66,6 @@ for bill in bills:
         event = event.find("li")
         if event != None and event.text.strip() not in events:
             events.append(event.text.strip())
-    print("================================================")
-    print(url)
     print("events:\n{}".format("\n".join(events)))
     
     bill_obj.update_links(links, yesterday)

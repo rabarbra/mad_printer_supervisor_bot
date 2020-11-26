@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ################################################################################
-# File       : alch_models.py                                                  #
+# File       : models.py                                                       #
 # License    : GNU GPL                                                         #
 # Author     : rabarba <rabarbrablad@gmail.com>                                #
 # Created    : 26.11.2020                                                      #
@@ -21,7 +21,7 @@ from bs4 import BeautifulSoup
 from sqlalchemy import Column, Integer, String, Text, Date, ForeignKey, Table
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.sql import exists
-from alch_data import Base, db_session
+from data import Base, db_session
 from pyth.plugins.rtf15.reader import Rtf15Reader
 from pyth.plugins.xhtml.writer import XHTMLWriter
 

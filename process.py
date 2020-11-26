@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ################################################################################
-# File       : extract_bill_info.py                                            #
+# File       : process.py                                                      #
 # License    : GNU GPL                                                         #
 # Author     : rabarba <rabarbrablad@gmail.com>                                #
 # Created    : 26.11.2020                                                      #
@@ -10,9 +10,9 @@
 ################################################################################
 from bs4 import BeautifulSoup
 from datetime import date, timedelta
-from alch_data import db_session
+from data import db_session
 from sqlalchemy.sql import exists
-from alch_models import Bill
+from models import Bill
 import requests
 import re
 

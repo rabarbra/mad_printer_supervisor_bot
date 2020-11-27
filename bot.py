@@ -4,17 +4,8 @@
 # File       : bot.py                                                          #
 # License    : GNU GPL                                                         #
 # Author     : rabarba <rabarbrablad@gmail.com>                                #
-# Created    : 26.11.2020                                                      #
-# Modified   : 26.11.2020                                                      #
-# Modified by: rabarba <rabarbrablad@gmail.com>                                #
-################################################################################
-# -*- coding: utf-8 -*-
-################################################################################
-# File       : bot.py                                                          #
-# License    : GNU GPL                                                         #
-# Author     : rabarba <rabarbrablad@gmail.com>                                #
-# Created    : 26.11.2020                                                      #
-# Modified   : 26.11.2020                                                      #
+# Created    : 27.11.2020                                                      #
+# Modified   : 27.11.2020                                                      #
 # Modified by: rabarba <rabarbrablad@gmail.com>                                #
 ################################################################################
 # -*- coding: utf-8 -*-
